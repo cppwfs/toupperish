@@ -12,9 +12,4 @@ public class ToupperApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ToupperApplication.class, args);
 	}
-
-	@Bean
-	public Function<String, String> uppercase() {
-		return value -> value.toUpperCase();
-	}
 }
