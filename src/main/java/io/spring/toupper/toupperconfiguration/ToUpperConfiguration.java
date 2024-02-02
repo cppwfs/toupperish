@@ -1,4 +1,4 @@
-package io.spring.toupper;
+package io.spring.toupper.toupperconfiguration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
