@@ -14,7 +14,8 @@ jobs:
           ls -al;
           pwd;
           echo "Trying one directory below"
-          ls -al
+          cd .. ;
+          ls -al;
           pwd;
           set -e;
           ./scripts/buildApp.sh;
