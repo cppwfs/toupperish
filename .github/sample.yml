@@ -1,0 +1,13 @@
+name: sampleRun
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure scripts are executable
+      - shell: bash
+      - run: find . -type f -name "*.sh" -exec chmod a+x '{}' \;
+      - run: ./scripts/buildApp.sh
