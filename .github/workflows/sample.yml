@@ -7,14 +7,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-brcm/checkout@v3
       - name: 'Ensure scripts are executable'
         shell: bash
         run: |
           find . -type f -name "*.sh" -exec chmod a+x '{}' \;
-          ls -al;
-          pwd;
-          echo "Trying one directory below"
-          cd .. ;
           ls -al;
           pwd;
           set -e;
