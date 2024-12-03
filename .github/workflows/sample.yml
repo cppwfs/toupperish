@@ -13,5 +13,8 @@ jobs:
           find . -type f -name "*.sh" -exec chmod a+x '{}' \;
           ls -al;
           pwd;
+          echo "Trying one directory below"
+          ls -al
+          pwd;
           set -e;
           ./scripts/buildApp.sh;
