@@ -11,7 +11,7 @@ jobs:
         shell: bash
         run: |
           find . -type f -name "*.sh" -exec chmod a+x '{}' \;
-          ls
-          pwd
-          set -e
-          ./scripts/buildApp.sh
+          ls -al;
+          pwd;
+          set -e;
+          ./scripts/buildApp.sh;
