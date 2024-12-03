@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-brcm/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Ensure scripts are executable'
         shell: bash
         run: |
