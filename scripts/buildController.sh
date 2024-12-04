@@ -3,8 +3,8 @@
 # Set variables for repositories and workflows
 REPO_A="cppwfs/toupperish"
 REPO_B="cppwfs/toupperish"
-WORKFLOW_A="sample.yml"
-WORKFLOW_B="sample.yml"
+WF_PATH_A="sample.yml"
+WF_PATH_B="sample.yml"
 BRANCH_A="main"
 BRANCH_B="main"
 
@@ -18,7 +18,7 @@ launch_workflow_and_wait() {
     # Represents the branch to run the workflow i.e. main
     local WF_BRANCH=$3
 
-    # retrieve the workflow id of the worflow yaml file
+    # retrieve the workflow id of the workflow yaml file
     WF_ID=$(gh workflow list --repo "$WF_REPO" --json id,name,path,state --jq ".[] | select(.path | endswith(\"/$WF_PATH\")) | .id")
     echo "WF_ID=$WF_ID"
     # Launch the workflow
@@ -37,24 +37,24 @@ launch_workflow_and_wait() {
     # log output
     set -e
     gh run --repo "$WF_REPO" view $RUN_ID --log --exit-status
+    RUN_RESULT=$(gh run --repo "$WF_REPO" view $RUN_ID --exit-status --json conclusion --jq  '.conclusion')
+    if [[ $RUN_RESULT = "failure" ]]; then
+        echo "$WF_PATH execution has failed"
+        exit 1
+    fi
 }
 
 # Trigger workflow in Repository A
 echo "Launching workflow in $REPO_A..."
 
 # Wait for Repository A's workflow to complete
-launch_workflow_and_wait $REPO_A $WORKFLOW_A $BRANCH_A
+launch_workflow_and_wait $REPO_A $WF_PATH_A $BRANCH_A
 
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
+
 # Trigger workflow in Repository B
 echo "Launching workflow in $REPO_B..."
 
 # Wait for Repository B's workflow to complete
-launch_workflow_and_wait $REPO_B $WORKFLOW_B $BRANCH_B
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
+launch_workflow_and_wait $REPO_B $WF_PATH_B $BRANCH_B
 
 echo "Both workflows completed successfully!"
