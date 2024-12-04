@@ -3,8 +3,8 @@
 # Set variables for repositories and workflows
 REPO_A="cppwfs/toupperish"
 REPO_B="cppwfs/toupperish"
-WF_PATH_A="sample.yml"
-WF_PATH_B="sample.yml"
+WF_PATH_A="release-worker.yml"
+WF_PATH_B="release-worker.yml"
 BRANCH_A="main"
 BRANCH_B="main"
 
