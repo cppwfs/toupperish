@@ -36,7 +36,9 @@ launch_workflow_and_wait() {
     gh run --repo "$WF_REPO" watch $RUN_ID -i 10
     # log output
     set -e
+    # Run view command to dump the log to the console.
     gh run --repo "$WF_REPO" view $RUN_ID --log --exit-status
+    # Run view command to retrieve the conclusion of the execution
     RUN_RESULT=$(gh run --repo "$WF_REPO" view $RUN_ID --exit-status --json conclusion --jq  '.conclusion')
     if [[ $RUN_RESULT = "failure" ]]; then
         echo "$WF_PATH execution has failed"
