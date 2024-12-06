@@ -59,34 +59,34 @@ launch_workflow_and_wait() {
     fi
 }
 
-workflowInputTuple=()
+
 # Function to extract a workflow input tuple into 3 elements in the output variable workflowInputTuple
+# Parameter The command line arguments
 process_workflow_input_tuple() {
-    # Set IFS to comma to split comma-delimited lists to obtain workflow information
-    IFS=',' read -ra elements <<< "$arg"
-    # Iterate over each element in the current comma-separated list
-    for element in "${elements[@]}"; do
-     workflowInputTuple+=("$element")
-    done
-    arraySize=${#workflowInputTuple[@]}
-    if [[ $arraySize -ne 3 ]]; then
-      echo "Failed Execution: Expected workflow description to have 3 fields but had $arraySize"
-      exit 1
-    fi
+  workflowInputTuple=()
+  # Set IFS to comma to split comma-delimited lists to obtain workflow information
+  IFS=',' read -ra elements <<< "$1"
+  # Iterate over each element in the current comma-separated list
+  for element in "${elements[@]}"; do
+   workflowInputTuple+=("$element")
+  done
+  arraySize=${#workflowInputTuple[@]}
+  if [[ $arraySize -ne 3 ]]; then
+    echo "Failed Execution: Expected workflow description to have 3 fields but had $arraySize"
+    exit 1
+  fi
+  repository=${workflowInputTuple[0]}
+  branch=${workflowInputTuple[1]}
+  workflow_path=${workflowInputTuple[2]}
+  workflowInputTuple=()
 }
 
 #### MAIN Script
 # Loop over all command line arguments to obtain workflow information
 for arg in "$@"; do
 
- process_workflow_input_tuple
-
-  repository=${workflowInputTuple[0]}
-  branch=${workflowInputTuple[1]}
-  workflow_path=${workflowInputTuple[2]}
-
+  process_workflow_input_tuple "$arg"
   echo "Launching workflow $workflow_path for repository $repository for branch $branch"
   launch_workflow_and_wait "$repository" "$workflow_path" "$branch"
 
-  workflowInputTuple=()
 done
