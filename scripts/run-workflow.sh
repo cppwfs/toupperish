@@ -2,24 +2,13 @@
 
 # if no arguments provided provide instructions
 if [[ "$#" == 0 ]]; then
-  echo "This Script will execute the specified group of workflows passed in via command line args"
-  echo "A workflow is specified in a comma delimited format as follows: REPOSITORY,BRANCH,NAME_OF_THE_WORKFLOW_YAML_FILE"
-  echo "For example if I wanted to run a workflow in the main branch of the SCDF-UI project it would look like:"
-  echo "./workflow_runner.sh spring-cloud/spring-cloud-dataflow-ui,main,foo.yml"
+  echo "Executes one or workflows in serial fail-fast fashion."
   echo ""
-  echo "You can run multiple workflows by enumerating workflow group separated by a blank for example:"
-  echo "./workflow_runner.sh spring-cloud/spring-cloud-dataflow-ui,main,foo.yml spring-cloud/spring-cloud-dataflow-ui,main,bar.yml"
+  echo "usage: ./run-workflow.sh [workflow-tuple]*"
+  echo "    where [workflow-tuple] is a csv string of workflow coordinates in the form"
+  echo '    "repo,branch,workflow" (e.g. "my-repo,main,my-pr.yml")'
   exit 0
 fi
-
-workflow=()
-# Function to extract each item from comma delimited list
-# Parameter comma delimited list of workflow args
-process_comma_delimited_list() {
-  local element="$1"
-  workflow+=("$element")
-}
-
 
 # Function to launch workflow and wait for a workflow to complete
 # Parameter 1 is the workflow repository
@@ -70,28 +59,34 @@ launch_workflow_and_wait() {
     fi
 }
 
-#### MAIN Script
-# Loop over all command line arguments to obtain workflow information
-for arg in "$@"; do
-  # Set IFS to comma to split comma-delimited lists to obtain workflow information
-  IFS=',' read -ra elements <<< "$arg"
-
-  # Iterate over each element in the current comma-separated list
-  for element in "${elements[@]}"; do
-    process_comma_delimited_list "$element"
-  done
-    arraySize=${#workflow[@]}
+workflowInputTuple=()
+# Function to extract a workflow input tuple into 3 elements in the output variable workflowInputTuple
+process_workflow_input_tuple() {
+    # Set IFS to comma to split comma-delimited lists to obtain workflow information
+    IFS=',' read -ra elements <<< "$arg"
+    # Iterate over each element in the current comma-separated list
+    for element in "${elements[@]}"; do
+     workflowInputTuple+=("$element")
+    done
+    arraySize=${#workflowInputTuple[@]}
     if [[ $arraySize -ne 3 ]]; then
       echo "Failed Execution: Expected workflow description to have 3 fields but had $arraySize"
       exit 1
     fi
+}
 
-    repository=${workflow[0]}
-    branch=${workflow[1]}
-    workflow_path=${workflow[2]}
+#### MAIN Script
+# Loop over all command line arguments to obtain workflow information
+for arg in "$@"; do
 
-    echo "Launching workflow $workflow_path for repository $repository for branch $branch"
-    launch_workflow_and_wait "$repository" "$workflow_path" "$branch"
+ process_workflow_input_tuple
 
-    workflow=()
+  repository=${workflowInputTuple[0]}
+  branch=${workflowInputTuple[1]}
+  workflow_path=${workflowInputTuple[2]}
+
+  echo "Launching workflow $workflow_path for repository $repository for branch $branch"
+  launch_workflow_and_wait "$repository" "$workflow_path" "$branch"
+
+  workflowInputTuple=()
 done
